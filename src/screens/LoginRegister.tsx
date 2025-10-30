@@ -1,135 +1,171 @@
 import { useState } from "react";
 import { cx } from "../utils/cx";
-import styles from "../styles/LoginRegister.module.css"
+import styles from "../styles/LoginRegister.module.css";
+import { useAuthStore } from "../store/AuthStore";
+import ErrorWindow from "../components/ErrorWindow/ErrorWindow";
+import StarryBackground from "../layout/StarryBackbround/StarryBackground";
 
 export default function LoginRegister() {
-    const [mode, setMode] = useState<"login" | "register">("login");
-    const [email, setEmail] = useState("");
-    const [login, setLogin] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Logging in:", { login, password });
-    };
 
-    const handleRegister = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (password !== confirmPassword) {
-            alert("Passwords do not match!");
-            return;
-        }
-        console.log("Registering:", { email, password });
-    };
+  const register = useAuthStore((state) => state.register);
+  const login = useAuthStore((state) => state.login);
 
-    // ---------------- LOGIN FORM ----------------
-    if (mode === "login") {
-        return (
-            <div className={cx("column", styles["login-register-form"])}>
-                <h2>Login</h2>
 
-                <form onSubmit={handleLogin}>
-                    <label>
-                        Login
-                        <input
-                            type="login"
-                            value={login}
-                            onChange={(e) => setLogin(e.target.value)}
-                            placeholder="you@example.com"
-                            required
-                        />
-                    </label>
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
 
-                    <label>
-                        Password
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            required
-                        />
-                    </label>
-
-                    <button type="submit">Log in</button>
-
-                    <p>
-                        Don’t have an account?
-                        <button
-                            type="button"
-                            onClick={() => setMode("register")}
-                        >
-                            Register
-                        </button>
-                    </p>
-                </form>
-            </div>
-        );
+    if (!email || !password) {
+      setError("Fields can not be empty.")
+      return;
     }
 
-    // ---------------- REGISTER FORM ----------------
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError("Login failed.")
+      console.log(err)
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("")
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Enter a valid e-mail.");
+      return;
+    }
+
+    try {
+      await register(email, password, username);
+    } catch (err) {
+      setError("Registraton failed. Try again.")
+      console.log(err)
+    }
+
+  };
+
+  // ---------------- LOGIN FORM ----------------
+  if (mode === "login") {
     return (
-        <div>
-            <h2>Register</h2>
+      <StarryBackground>
+        <div className={cx("column", styles["login-register-form"])}>
+          <h1>Login</h1>
 
-            <form onSubmit={handleRegister}>
-                <label>
-                    Email
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        required
-                    />
-                </label>
+          <form onSubmit={handleLogin} className="column">
+            <label>
+              Email
+              <input
+                type="login"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-mail"
+                required
+              />
+            </label>
 
-                <label>
-                    Login
-                    <input
-                        type="login"
-                        value={login}
-                        onChange={(e) => setLogin(e.target.value)}
-                        placeholder="you@example.com"
-                        required
-                    />
-                </label>
+            <label>
+              Password
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </label>
 
-                <label>
-                    Password
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                    />
-                </label>
+            {error && <ErrorWindow message={error}></ErrorWindow>}
 
-                <label>
-                    Confirm Password
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                    />
-                </label>
+            <button className="pixel-corners" type="submit">Log in</button>
 
-                <button type="submit">Register</button>
 
-                <p>
-                    Already have an account?{" "}
-                    <button
-                        type="button"
-                        onClick={() => setMode("login")}
-                    >
-                        Back to login
-                    </button>
-                </p>
-            </form>
+            <p>Don’t have an account?</p>
+            <p className="clickable-text" onClick={() => setMode("register")}>
+              Register
+            </p>
+
+          </form>
         </div>
+      </StarryBackground>
     );
+  }
+
+  // ---------------- REGISTER FORM ----------------
+  return (
+    <StarryBackground>
+      <div className={cx("column", styles["login-register-form"])}>
+        <h1>Register</h1>
+
+        <form onSubmit={handleRegister} className="column">
+          <label>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="e-mail"
+              required
+            />
+          </label>
+
+          <label>
+            Username
+            <input
+              type="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="username"
+              required
+            />
+          </label>
+
+          <label>
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </label>
+
+          <label>
+            Confirm Password
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </label>
+
+          <button className="pixel-corners" type="submit">Register</button>
+
+          <p>
+            Already have an account?</p>
+          <p className="clickable-text" onClick={() => setMode("login")}>
+            Back to login
+          </p>
+
+        </form>
+      </div>
+    </StarryBackground>
+  );
 }

@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
 export default function GameSelect() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    return (
-        <div>
-            <h1>Select Game</h1>
+  return (
+    <div className="main-container">
+      <h1>Select Game</h1>
 
-            <div onClick={() => navigate("/game/firstgame")}>game 1</div>
-            <div onClick={() => navigate("/game/secondgame")}>game 2</div>
-        </div>
-    );
+      <div onClick={() => navigate("/game/firstgame")}>game 1</div>
+      <div onClick={() => navigate("/game/secondgame")}>game 2</div>
+    </div>
+  );
 }

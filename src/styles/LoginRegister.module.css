@@ -1,3 +1,39 @@
 .login-register-form {
+  width: 100%;
+  height: 100%;
   align-items: center;
+  justify-items: center;
+  gap: 50px;
+}
+
+.login-register-form::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    50% 100% at center,
+    var(--gray-background) 0%,
+    rgba(var(--gray-background-rgb), 0.8) 40%,
+    rgba(var(--gray-background-rgb), 0.4) 60%,
+    rgba(var(--gray-background-rgb), 0.1) 80%,
+    rgba(var(--gray-background-rgb), 0) 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+.login-register-form > * {
+  position: relative;
+  z-index: 1;
+}
+
+.login-register-form form {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.login-register-form label {
+  display: flex;
+  flex-direction: column;
 }

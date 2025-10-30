@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { generateUsername } from "../utils/generateUsername";
 
 type UserState = {
@@ -9,12 +9,19 @@ type UserState = {
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set, get) => ({
-      username: get()?.username || generateUsername(),
+    (set) => ({
+      username: "",
       setUsername: (name) => set({ username: name }),
     }),
     {
       name: "user-storage",
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        if (!state?.username) {
+          const newName = generateUsername();
+          state?.setUsername?.(newName);
+        }
+      },
     }
   )
 );

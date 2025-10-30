@@ -5,13 +5,26 @@ import RootLayout from "./layout/RootLayout";
 import MainLayout from "./layout/MainLayoout";
 import LoginRegister from "./screens/LoginRegister";
 
-
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      { path: "/", element: <MainLayout><GameSelect /></MainLayout> },
-      { path: "/game/:gameName", element: <MainLayout><GameScreen /></MainLayout> },
+      {
+        path: "/",
+        element: (
+          <MainLayout>
+            <GameSelect />
+          </MainLayout>
+        ),
+      },
+      {
+        path: "/game/:gameName",
+        element: (
+          <MainLayout>
+            <GameScreen />
+          </MainLayout>
+        ),
+      },
       { path: "/login", element: <LoginRegister /> },
     ],
   },
