@@ -11,7 +11,8 @@ export default function LoginRegister() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
 
 
   const register = useAuthStore((state) => state.register);
@@ -89,7 +90,10 @@ export default function LoginRegister() {
               />
             </label>
 
-            {error && <ErrorWindow message={error}></ErrorWindow>}
+            <ErrorWindow
+              message={error}
+              onClose={() => setError(null)}
+            />
 
             <button className="pixel-corners" type="submit">Log in</button>
 
@@ -155,6 +159,11 @@ export default function LoginRegister() {
               required
             />
           </label>
+
+          <ErrorWindow
+            message={error}
+            onClose={() => setError(null)}
+          />
 
           <button className="pixel-corners" type="submit">Register</button>
 

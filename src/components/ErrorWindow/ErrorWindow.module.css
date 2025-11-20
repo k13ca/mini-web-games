@@ -1,0 +1,120 @@
+.error-window {
+  border: double 10px;
+  padding: 40px;
+  border-radius: 10px;
+  background-color: black;
+  min-width: 500px;
+  height: 500px;
+  margin: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.error-window.opening {
+  animation: expandWidth 0.4s ease-out, expandHeight 0.4s ease-out 0.4s;
+  animation-fill-mode: backwards;
+}
+
+.error-window.closing {
+  animation: collapseHeight 0.4s ease-in 0.4s forwards,
+    collapseWidth 0.4s ease-in 0.8s forwards;
+}
+
+@keyframes expandWidth {
+  from {
+    width: 0;
+    min-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+  }
+}
+
+@keyframes expandHeight {
+  from {
+    height: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+}
+
+@keyframes collapseHeight {
+  to {
+    height: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+}
+
+@keyframes collapseWidth {
+  to {
+    width: 0;
+    min-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+  }
+}
+
+.close-btn {
+  box-shadow: none;
+  position: absolute;
+  top: -30px;
+  right: -30px;
+}
+
+.show {
+  animation: glitchBlink 0.6s forwards;
+}
+
+.closing .show,
+.closing h2,
+.closing p {
+  animation: glitchFadeOut 0.4s forwards;
+}
+
+@keyframes glitchBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  16%,
+  33% {
+    opacity: 0;
+  }
+  49%,
+  66% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 0;
+  }
+}
+
+@keyframes glitchFadeOut {
+  0% {
+    opacity: 1;
+  }
+  33% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

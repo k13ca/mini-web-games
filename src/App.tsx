@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import GameSelect from "./screens/GameSelect";
 import GameScreen from "./screens/GameScreen";
 import RootLayout from "./layout/RootLayout";
-import MainLayout from "./layout/MainLayoout";
+import MainLayout from "./layout/MainLayout";
 import LoginRegister from "./screens/LoginRegister";
 
 const router = createBrowserRouter([

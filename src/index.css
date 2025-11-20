@@ -59,6 +59,7 @@ body,
 #root {
   width: 100%;
   height: 100%;
+  user-select: none;
 }
 
 body {
@@ -77,6 +78,7 @@ h1 {
 
 p {
   text-shadow: var(--shadow);
+  font-size: 0.8rem;
 }
 
 button {

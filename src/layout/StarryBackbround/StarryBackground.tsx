@@ -1,4 +1,4 @@
-import React, { useMemo, type ReactNode } from 'react';
+import React, { useMemo, useEffect, useState, useCallback, type ReactNode } from 'react';
 import styles from "./StarryBackground.module.css";
 import { cx } from '../../utils/cx';
 import StarSvgUrl from "../../assets/backgroundStar.svg";
@@ -12,12 +12,8 @@ interface StarData {
     begin: number;
     minOpacity: number;
 }
-
 type StarProps = StarData;
-
-interface StarryBackgroundProps {
-    children?: ReactNode;
-}
+interface StarryBackgroundProps { children?: ReactNode; }
 
 const getRandomInt = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
@@ -39,23 +35,63 @@ const Star = React.memo(({ x, y, size, duration, begin, minOpacity }: StarProps)
 ));
 
 const StarryBackground = ({ children }: StarryBackgroundProps) => {
-    const NUM_STARS = 200;
+    const [width, setWidth] = useState<number>(() =>
+        typeof window !== 'undefined' ? window.innerWidth : 1024
+    );
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        let rafId: number | null = null;
+        const onResize = () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                setWidth(window.innerWidth);
+                rafId = null;
+            });
+        };
+        window.addEventListener('resize', onResize);
+        return () => {
+            window.removeEventListener('resize', onResize);
+            if (rafId !== null) cancelAnimationFrame(rafId);
+        };
+    }, []);
+
+    const numStars = useMemo(() => (width < 900 ? 200 : 400), [width]);
+
+    const sizeBuckets = useMemo(() => [
+        { min: 2, max: 6, weight: 0.92 },
+        { min: 7, max: 8, weight: 0.08 },
+    ], []);
+
+    const pickSizeFromBuckets = useCallback((): number => {
+        const total = sizeBuckets.reduce((s, b) => s + b.weight, 0);
+        let r = Math.random() * total;
+        for (const b of sizeBuckets) {
+            if (r < b.weight) {
+                return getRandomFloat(b.min, b.max);
+            }
+            r -= b.weight;
+        }
+        const last = sizeBuckets[sizeBuckets.length - 1];
+        return getRandomFloat(last.min, last.max);
+    }, [sizeBuckets]);
+
 
     const starData: StarData[] = useMemo(() => {
         const data: StarData[] = [];
-        for (let i = 0; i < NUM_STARS; i++) {
+        for (let i = 0; i < numStars; i++) {
             data.push({
                 id: i,
                 x: getRandomInt(-5, 105),
                 y: getRandomInt(-5, 105),
-                size: getRandomFloat(2, 10),
+                size: pickSizeFromBuckets(),
                 duration: getRandomFloat(1.0, 3.5),
                 begin: getRandomFloat(0.0, 3.5),
-                minOpacity: getRandomFloat(0.1, 0.4),
+                minOpacity: getRandomFloat(0.08, 0.4),
             });
         }
         return data;
-    }, [NUM_STARS]);
+    }, [numStars, pickSizeFromBuckets]);
 
     return (
         <div className={cx(styles["starry-background-container"])}>
